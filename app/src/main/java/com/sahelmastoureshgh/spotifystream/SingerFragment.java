@@ -1,6 +1,7 @@
 package com.sahelmastoureshgh.spotifystream;
 
 import android.app.Fragment;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
@@ -9,14 +10,15 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
 import kaaes.spotify.webapi.android.SpotifyApi;
 import kaaes.spotify.webapi.android.SpotifyService;
-import kaaes.spotify.webapi.android.models.Artist;
 import kaaes.spotify.webapi.android.models.ArtistsPager;
 
 /**
@@ -28,13 +30,14 @@ public class SingerFragment extends Fragment{
     SpotifyApi api;
     SpotifyService spotifyService ;
     FetchSingerTask singerTask;
-    EditText searchSinger;
+
 
     public SingerFragment() {
         api = new SpotifyApi();
         spotifyService = api.getService();
         allSingers = new ArrayList<>();
-        singerTask = new FetchSingerTask();
+
+
     }
 
 
@@ -48,7 +51,8 @@ public class SingerFragment extends Fragment{
                 getActivity(), // The current context (this activity)
                 R.layout.list_item_singer, // The name of the layout ID.
                 R.id.list_item_singer_textview, // The ID of the textview to populate.
-                allSingers);
+                new ArrayList<Singer>());
+
 
 
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
@@ -57,29 +61,40 @@ public class SingerFragment extends Fragment{
         ListView listView = (ListView) rootView.findViewById(R.id.listview_singer);
         listView.setAdapter(singerAdapter);
 
-        //Listener on Search Text
-        searchSinger= (EditText) rootView.findViewById(R.id.search_text_view);
-        searchSinger.addTextChangedListener(new TextWatcher() {
+        //Add Listener when Singer list Item has been clicked
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                // Get the data item for this position
+                Singer clickedSinger = singerAdapter.getItem(position);
+                Intent songIntent = new Intent(getActivity(), TopSongActivity.class)
+                        .putExtra(Intent.EXTRA_TEXT, clickedSinger.id)
+                        .putExtra(Intent.EXTRA_REFERRER_NAME, clickedSinger.name);
+                startActivity(songIntent);
 
+            }
+        });
+        singerTask = new FetchSingerTask();
+        singerTask.execute("Beyonce");
+
+        //Listener on Search Text
+        EditText searchSinger= (EditText) rootView.findViewById(R.id.search_text_view);
+        searchSinger.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                String myText = searchSinger.getText().toString().trim();
-                if (myText.length() > 1) {
-                    singerTask.execute(myText);
-                }
-
+                Toast.makeText(getActivity(),s.toString(),Toast.LENGTH_SHORT);
             }
 
             @Override
-            public void afterTextChanged(Editable s) {
+            public void afterTextChanged(final Editable s) {
 
             }
         });
+
 
         return rootView;
 
@@ -101,9 +116,9 @@ public class SingerFragment extends Fragment{
             //Get Artist from Spotify Api and fill Singer model with the results for artist who have images and name
             try {
                 ArtistsPager results = spotifyService.searchArtists(singerSearch);
-                for(Artist artist : results.artists.items) {
+                for(kaaes.spotify.webapi.android.models.Artist artist : results.artists.items) {
                     if(artist.name!=null && artist.images.size()>0) {
-                        allSingers.add(new Singer(artist.name, artist.images.get(0).url));
+                        allSingers.add(new Singer(artist.name, artist.images.get(0).url, artist.id));
                     }
 
                 }
@@ -120,9 +135,11 @@ public class SingerFragment extends Fragment{
 
         @Override
         protected void onPostExecute(ArrayList<Singer> singers) {
-            singerAdapter.clear();
+
             if(singers!=null) {
-                singerAdapter.addAll(singers);
+                 singerAdapter.clear();
+                 singerAdapter.addAll(singers);
+
             }
 
         }
