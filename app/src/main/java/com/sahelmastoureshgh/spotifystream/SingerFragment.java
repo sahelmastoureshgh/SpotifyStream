@@ -13,7 +13,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -29,7 +28,8 @@ public class SingerFragment extends Fragment{
     CustomSingersAdapter singerAdapter;
     SpotifyApi api;
     SpotifyService spotifyService ;
-    FetchSingerTask singerTask;
+
+
 
 
     public SingerFragment() {
@@ -38,6 +38,16 @@ public class SingerFragment extends Fragment{
         allSingers = new ArrayList<>();
 
 
+
+
+    }
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if(savedInstanceState != null) {
+            allSingers = savedInstanceState.getParcelableArrayList("AllSinger");
+
+        }
     }
 
 
@@ -74,8 +84,6 @@ public class SingerFragment extends Fragment{
 
             }
         });
-        singerTask = new FetchSingerTask();
-        singerTask.execute("Beyonce");
 
         //Listener on Search Text
         EditText searchSinger= (EditText) rootView.findViewById(R.id.search_text_view);
@@ -86,11 +94,18 @@ public class SingerFragment extends Fragment{
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                Toast.makeText(getActivity(),s.toString(),Toast.LENGTH_SHORT);
+
+
             }
 
             @Override
             public void afterTextChanged(final Editable s) {
+
+                if(s.toString().length()>0) {
+                    FetchSingerTask singerTask = new FetchSingerTask();
+                    singerTask.execute(s.toString());
+                }
+
 
             }
         });
@@ -98,6 +113,11 @@ public class SingerFragment extends Fragment{
 
         return rootView;
 
+    }
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putParcelableArrayList("AllSinger", allSingers);
+        super.onSaveInstanceState(outState);
     }
 
 
@@ -135,10 +155,10 @@ public class SingerFragment extends Fragment{
 
         @Override
         protected void onPostExecute(ArrayList<Singer> singers) {
-
+            singerAdapter.clear();
             if(singers!=null) {
-                 singerAdapter.clear();
                  singerAdapter.addAll(singers);
+
 
             }
 
