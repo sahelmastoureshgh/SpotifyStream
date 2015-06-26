@@ -105,6 +105,13 @@ public class SingerFragment extends Fragment{
                     FetchSingerTask singerTask = new FetchSingerTask();
                     singerTask.execute(s.toString());
                 }
+                else
+                {
+                    /* Empty string case remove arrayList items */
+                    allSingers.clear();
+                    singerAdapter.clear();
+                    
+                }
 
 
             }
@@ -135,6 +142,7 @@ public class SingerFragment extends Fragment{
             singerSearch = params[0];
             //Get Artist from Spotify Api and fill Singer model with the results for artist who have images and name
             try {
+                allSingers.clear();
                 ArtistsPager results = spotifyService.searchArtists(singerSearch);
                 for(kaaes.spotify.webapi.android.models.Artist artist : results.artists.items) {
                     if(artist.name!=null && artist.images.size()>0) {

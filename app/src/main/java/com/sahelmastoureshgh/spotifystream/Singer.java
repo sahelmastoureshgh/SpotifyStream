@@ -5,6 +5,7 @@ import android.os.Parcelable;
 
 /**
  * Created by sahelmastoureshgh on 6/14/15.
+ * Model for an Artist to keep name, picture and id of singer
  */
 public class Singer implements Parcelable{
     public String name;
