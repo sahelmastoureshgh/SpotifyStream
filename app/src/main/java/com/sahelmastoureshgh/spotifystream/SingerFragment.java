@@ -1,6 +1,7 @@
 package com.sahelmastoureshgh.spotifystream;
 
 import android.app.Fragment;
+import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -13,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -23,13 +25,12 @@ import kaaes.spotify.webapi.android.models.ArtistsPager;
 /**
  * Encapsulates fetching the Singer and displaying it as a ListView layout
  */
-public class SingerFragment extends Fragment{
+public class SingerFragment extends Fragment {
     ArrayList<Singer> allSingers;
     CustomSingersAdapter singerAdapter;
     SpotifyApi api;
-    SpotifyService spotifyService ;
-
-
+    SpotifyService spotifyService;
+    String singerSearch;
 
 
     public SingerFragment() {
@@ -38,31 +39,28 @@ public class SingerFragment extends Fragment{
         allSingers = new ArrayList<>();
 
 
-
-
     }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if(savedInstanceState != null) {
+        if (savedInstanceState != null) {
             allSingers = savedInstanceState.getParcelableArrayList("AllSinger");
 
         }
     }
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState){
+                             Bundle savedInstanceState) {
         // The singerAdapter will take data from a source and
         // use it to populate the ListView it's attached to.
 
-        singerAdapter =  new CustomSingersAdapter(
+        singerAdapter = new CustomSingersAdapter(
                 getActivity(), // The current context (this activity)
                 R.layout.list_item_singer, // The name of the layout ID.
                 R.id.list_item_singer_textview, // The ID of the textview to populate.
                 new ArrayList<Singer>());
-
 
 
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
@@ -86,7 +84,7 @@ public class SingerFragment extends Fragment{
         });
 
         //Listener on Search Text
-        EditText searchSinger= (EditText) rootView.findViewById(R.id.search_text_view);
+        final EditText searchSinger = (EditText) rootView.findViewById(R.id.search_text_view_artist);
         searchSinger.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -101,16 +99,14 @@ public class SingerFragment extends Fragment{
             @Override
             public void afterTextChanged(final Editable s) {
 
-                if(s.toString().length()>0) {
+                if (s.toString().length() > 0) {
                     FetchSingerTask singerTask = new FetchSingerTask();
                     singerTask.execute(s.toString());
-                }
-                else
-                {
+                } else {
                     /* Empty string case remove arrayList items */
                     allSingers.clear();
                     singerAdapter.clear();
-                    
+
                 }
 
 
@@ -121,9 +117,12 @@ public class SingerFragment extends Fragment{
         return rootView;
 
     }
+
     @Override
     public void onSaveInstanceState(Bundle outState) {
+        /* Save state of allISingers arrayList */
         outState.putParcelableArrayList("AllSinger", allSingers);
+
         super.onSaveInstanceState(outState);
     }
 
@@ -135,17 +134,18 @@ public class SingerFragment extends Fragment{
     public class FetchSingerTask extends AsyncTask<String, Void, ArrayList<Singer>> {
 
         private final String LOG_TAG = FetchSingerTask.class.getSimpleName();
-        String singerSearch;
+
 
         @Override
         protected ArrayList<Singer> doInBackground(String... params) {
             singerSearch = params[0];
             //Get Artist from Spotify Api and fill Singer model with the results for artist who have images and name
             try {
+                /* remove previous search result from Arraylist allSingers */
                 allSingers.clear();
                 ArtistsPager results = spotifyService.searchArtists(singerSearch);
-                for(kaaes.spotify.webapi.android.models.Artist artist : results.artists.items) {
-                    if(artist.name!=null && artist.images.size()>0) {
+                for (kaaes.spotify.webapi.android.models.Artist artist : results.artists.items) {
+                    if (artist.name != null && artist.images.size() > 0) {
                         allSingers.add(new Singer(artist.name, artist.images.get(0).url, artist.id));
                     }
 
@@ -164,8 +164,17 @@ public class SingerFragment extends Fragment{
         @Override
         protected void onPostExecute(ArrayList<Singer> singers) {
             singerAdapter.clear();
-            if(singers!=null) {
-                 singerAdapter.addAll(singers);
+            if (singers != null) {
+                //If there is no singer found
+                if(singers.size()==0){
+                    Context context = getActivity();
+                    if(context != null) {
+                        Toast.makeText(context, "Could not Find this artist, please refine your search", Toast.LENGTH_LONG).show();
+                    }
+                }
+                else {
+                    singerAdapter.addAll(singers);
+                }
 
 
             }

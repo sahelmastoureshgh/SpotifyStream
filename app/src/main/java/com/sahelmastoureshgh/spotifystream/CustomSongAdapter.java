@@ -32,12 +32,12 @@ public class CustomSongAdapter extends ArrayAdapter<Song> {
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.list_item_song_track, parent, false);
         }
         // Lookup view for data population
-        TextView  songName = (TextView) convertView.findViewById(R.id.list_item_song_textview);
-        TextView  albumName = (TextView) convertView.findViewById(R.id.list_item_album_textview);
+        TextView songName = (TextView) convertView.findViewById(R.id.list_item_song_textview);
+        TextView albumName = (TextView) convertView.findViewById(R.id.list_item_album_textview);
         ImageView songImage = (ImageView) convertView.findViewById(R.id.list_item_song_picture);
 
         // Populate the data into the template view using the data object for songs which have pictures and name and album name
-        if (currentSong.picture != null && currentSong.name != null &&  currentSong.album != null) {
+        if (currentSong.picture != null && currentSong.name != null && currentSong.album != null) {
             songName.setText(currentSong.name);
             albumName.setText(currentSong.album);
             Picasso.with(getContext()).load(currentSong.picture).fit()

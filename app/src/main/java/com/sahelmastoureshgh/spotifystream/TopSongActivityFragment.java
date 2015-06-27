@@ -26,9 +26,10 @@ public class TopSongActivityFragment extends Fragment {
     ArrayList<Song> allSongs;
     CustomSongAdapter songAdapter;
     SpotifyApi api;
-    SpotifyService spotifyService ;
+    SpotifyService spotifyService;
     FetchTrackTask trackTask;
-    String  withoutImage ="https://placeimg.com/80/80/nature";
+    // when there is no album image but there is name and album name
+    String withoutImage = "https://placeimg.com/80/80/nature";
 
 
     public TopSongActivityFragment() {
@@ -38,18 +39,30 @@ public class TopSongActivityFragment extends Fragment {
     }
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (savedInstanceState != null) {
+            allSongs = savedInstanceState.getParcelableArrayList("allSongs");
+
+        }
+    }
+
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // The songAdapter will take data from a source and
         // use it to populate the ListView it's attached to.
 
-        songAdapter =  new CustomSongAdapter(
+        songAdapter = new CustomSongAdapter(
                 getActivity(), // The current context (this activity)
                 R.layout.list_item_song_track, // The name of the layout ID.
                 R.id.list_item_song_textview, // The ID of the textview to populate.
                 new ArrayList<Song>());
+
+        /* Get an Intent instance and retrieve Artist/Singer Id from EXTRA_TEXT to get his track */
         Intent intent = getActivity().getIntent();
-        if (intent!=null && intent.hasExtra(Intent.EXTRA_TEXT)){
+        if (intent != null && intent.hasExtra(Intent.EXTRA_TEXT)) {
             trackTask = new FetchTrackTask();
             String singerId = intent.getStringExtra(Intent.EXTRA_TEXT);
             trackTask.execute(singerId);
@@ -65,8 +78,11 @@ public class TopSongActivityFragment extends Fragment {
         return rootView;
     }
 
-
-
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putParcelableArrayList("AllSongs", allSongs);
+        super.onSaveInstanceState(outState);
+    }
 
 
     /**
@@ -80,16 +96,21 @@ public class TopSongActivityFragment extends Fragment {
 
         @Override
         protected ArrayList<Song> doInBackground(String... params) {
+
+            //clear arrayList of allSongs
+            allSongs.clear();
             HashMap<String, Object> options = new HashMap<String, Object>() {
-                { put("country", "US"); }
+                {
+                    put("country", "US");
+                }
             };
             //Get Track from Spotify Api and fill Song model with the results for tracks which have name and album
             //For empty images just put dummy image Still wanted to show songs which doesnt have album image
             try {
                 Tracks sTracks = spotifyService.getArtistTopTrack(params[0], options);
-                for(Track record : sTracks.tracks) {
-                    if(record.name!=null && record.album.name!=null) {
-                        allSongs.add(new Song(record.name, record.album.name, record.album.images.size() > 0 ? record.album.images.get(0).url:withoutImage ));
+                for (Track record : sTracks.tracks) {
+                    if (record.name != null && record.album.name != null) {
+                        allSongs.add(new Song(record.name, record.album.name, record.album.images.size() > 0 ? record.album.images.get(0).url : withoutImage));
                     }
 
                 }
@@ -107,7 +128,7 @@ public class TopSongActivityFragment extends Fragment {
         @Override
         protected void onPostExecute(ArrayList<Song> songs) {
 
-            if(songs!=null) {
+            if (songs != null) {
                 songAdapter.clear();
                 songAdapter.addAll(songs);
 
