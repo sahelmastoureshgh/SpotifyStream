@@ -26,7 +26,7 @@ import kaaes.spotify.webapi.android.models.ArtistsPager;
  * Encapsulates fetching the Singer and displaying it as a ListView layout
  */
 public class SingerFragment extends Fragment {
-    ArrayList<Singer> allSingers;
+    ArrayList<Singer> allSingersTemp;
     CustomSingersAdapter singerAdapter;
     SpotifyApi api;
     SpotifyService spotifyService;
@@ -36,7 +36,7 @@ public class SingerFragment extends Fragment {
     public SingerFragment() {
         api = new SpotifyApi();
         spotifyService = api.getService();
-        allSingers = new ArrayList<>();
+
 
 
     }
@@ -44,8 +44,9 @@ public class SingerFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        allSingersTemp = new ArrayList<Singer>();
         if (savedInstanceState != null) {
-            allSingers = savedInstanceState.getParcelableArrayList("AllSinger");
+            allSingersTemp = savedInstanceState.getParcelableArrayList("AllSinger");
 
         }
     }
@@ -60,7 +61,7 @@ public class SingerFragment extends Fragment {
                 getActivity(), // The current context (this activity)
                 R.layout.list_item_singer, // The name of the layout ID.
                 R.id.list_item_singer_textview, // The ID of the textview to populate.
-                new ArrayList<Singer>());
+                allSingersTemp);
 
 
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
@@ -104,7 +105,6 @@ public class SingerFragment extends Fragment {
                     singerTask.execute(s.toString());
                 } else {
                     /* Empty string case remove arrayList items */
-                    allSingers.clear();
                     singerAdapter.clear();
 
                 }
@@ -121,7 +121,7 @@ public class SingerFragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         /* Save state of allISingers arrayList */
-        outState.putParcelableArrayList("AllSinger", allSingers);
+        outState.putParcelableArrayList("AllSinger", allSingersTemp);
 
         super.onSaveInstanceState(outState);
     }
@@ -141,8 +141,7 @@ public class SingerFragment extends Fragment {
             singerSearch = params[0];
             //Get Artist from Spotify Api and fill Singer model with the results for artist who have images and name
             try {
-                /* remove previous search result from Arraylist allSingers */
-                allSingers.clear();
+                ArrayList<Singer>  allSingers = new ArrayList<>();
                 ArtistsPager results = spotifyService.searchArtists(singerSearch);
                 for (kaaes.spotify.webapi.android.models.Artist artist : results.artists.items) {
                     if (artist.name != null && artist.images.size() > 0) {
@@ -165,6 +164,7 @@ public class SingerFragment extends Fragment {
         protected void onPostExecute(ArrayList<Singer> singers) {
             singerAdapter.clear();
             if (singers != null) {
+                allSingersTemp = singers;
                 //If there is no singer found
                 if(singers.size()==0){
                     Context context = getActivity();

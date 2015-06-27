@@ -23,7 +23,7 @@ import kaaes.spotify.webapi.android.models.Tracks;
  * A placeholder fragment containing a simple view.
  */
 public class TopSongActivityFragment extends Fragment {
-    ArrayList<Song> allSongs;
+    ArrayList<Song> allSongTemp;
     CustomSongAdapter songAdapter;
     SpotifyApi api;
     SpotifyService spotifyService;
@@ -35,14 +35,15 @@ public class TopSongActivityFragment extends Fragment {
     public TopSongActivityFragment() {
         api = new SpotifyApi();
         spotifyService = api.getService();
-        allSongs = new ArrayList<>();
+
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        allSongTemp = new ArrayList<Song>();
         if (savedInstanceState != null) {
-            allSongs = savedInstanceState.getParcelableArrayList("allSongs");
+            allSongTemp = savedInstanceState.getParcelableArrayList("AllSongsConst");
 
         }
     }
@@ -58,11 +59,11 @@ public class TopSongActivityFragment extends Fragment {
                 getActivity(), // The current context (this activity)
                 R.layout.list_item_song_track, // The name of the layout ID.
                 R.id.list_item_song_textview, // The ID of the textview to populate.
-                new ArrayList<Song>());
+                allSongTemp);
 
         /* Get an Intent instance and retrieve Artist/Singer Id from EXTRA_TEXT to get his track */
         Intent intent = getActivity().getIntent();
-        if (intent != null && intent.hasExtra(Intent.EXTRA_TEXT)) {
+        if (savedInstanceState==null && intent != null && intent.hasExtra(Intent.EXTRA_TEXT)) {
             trackTask = new FetchTrackTask();
             String singerId = intent.getStringExtra(Intent.EXTRA_TEXT);
             trackTask.execute(singerId);
@@ -80,7 +81,7 @@ public class TopSongActivityFragment extends Fragment {
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        outState.putParcelableArrayList("AllSongs", allSongs);
+        outState.putParcelableArrayList("AllSongsConst", allSongTemp);
         super.onSaveInstanceState(outState);
     }
 
@@ -97,8 +98,8 @@ public class TopSongActivityFragment extends Fragment {
         @Override
         protected ArrayList<Song> doInBackground(String... params) {
 
-            //clear arrayList of allSongs
-            allSongs.clear();
+
+            ArrayList<Song> allSongs = new ArrayList<Song>();
             HashMap<String, Object> options = new HashMap<String, Object>() {
                 {
                     put("country", "US");
@@ -129,6 +130,7 @@ public class TopSongActivityFragment extends Fragment {
         protected void onPostExecute(ArrayList<Song> songs) {
 
             if (songs != null) {
+                allSongTemp = songs;
                 songAdapter.clear();
                 songAdapter.addAll(songs);
 
