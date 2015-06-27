@@ -37,10 +37,10 @@ public class CustomSongAdapter extends ArrayAdapter<Song> {
         ImageView songImage = (ImageView) convertView.findViewById(R.id.list_item_song_picture);
 
         // Populate the data into the template view using the data object for songs which have pictures and name and album name
-        if (currentSong.picture != null && currentSong.name != null && currentSong.album != null) {
-            songName.setText(currentSong.name);
-            albumName.setText(currentSong.album);
-            Picasso.with(getContext()).load(currentSong.picture).fit()
+        if (currentSong.getPicture() != null && currentSong.getName() != null && currentSong.getAlbum() != null) {
+            songName.setText(currentSong.getName());
+            albumName.setText(currentSong.getAlbum());
+            Picasso.with(getContext()).load(currentSong.getPicture()).fit()
                     .centerInside().into(songImage);
         }
         // Return the completed view to render on screen

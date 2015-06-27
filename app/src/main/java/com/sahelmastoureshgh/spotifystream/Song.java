@@ -8,10 +8,32 @@ import android.os.Parcelable;
  * Model for an Track to keep name, album name and album's picture of song
  */
 public class Song implements Parcelable {
-    public String name;
-    public String album;
-    public String picture;
+    private String name;
+    private String album;
+    private String picture;
+    public String getName() {
+        return name;
+    }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getAlbum() {
+        return album;
+    }
+
+    public void setAlbum(String album) {
+        this.album = album;
+    }
+
+    public String getPicture() {
+        return picture;
+    }
+
+    public void setPicture(String picture) {
+        this.picture = picture;
+    }
 
     public Song(String name, String album, String picture) {
         this.name = name;

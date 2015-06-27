@@ -8,9 +8,37 @@ import android.os.Parcelable;
  * Model for an Artist to keep name, picture and id of singer
  */
 public class Singer implements Parcelable{
-    public String name;
-    public String picture;
-    public String id;
+    private String name;
+    private String picture;
+    private String id;
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getPicture() {
+        return picture;
+    }
+
+    public void setPicture(String picture) {
+        this.picture = picture;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public static Creator<Singer> getCREATOR() {
+        return CREATOR;
+    }
+
 
     public Singer(String name, String picture, String id) {
         this.name = name;

@@ -37,9 +37,9 @@ public class CustomSingersAdapter extends ArrayAdapter<Singer> {
         ImageView singerPicture = (ImageView) convertView.findViewById(R.id.list_item_picture);
 
         // Populate the data into the template view using the data object for singers who have pictures and name
-        if (mySinger.picture != null && mySinger.name != null) {
-            singerName.setText(mySinger.name);
-            Picasso.with(getContext()).load(mySinger.picture).fit()
+        if (mySinger.getPicture() != null && mySinger.getName() != null) {
+            singerName.setText(mySinger.getName());
+            Picasso.with(getContext()).load(mySinger.getPicture()).fit()
                     .centerInside().into(singerPicture);
         }
         // Return the completed view to render on screen

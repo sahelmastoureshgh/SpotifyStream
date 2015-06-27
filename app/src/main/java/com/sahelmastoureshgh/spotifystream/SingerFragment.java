@@ -47,6 +47,7 @@ public class SingerFragment extends Fragment {
         allSingersTemp = new ArrayList<Singer>();
         if (savedInstanceState != null) {
             allSingersTemp = savedInstanceState.getParcelableArrayList("AllSinger");
+            singerSearch = savedInstanceState.getString("WhatHaveBeenSearched");
 
         }
     }
@@ -77,41 +78,44 @@ public class SingerFragment extends Fragment {
                 // Get the data item for this position
                 Singer clickedSinger = singerAdapter.getItem(position);
                 Intent songIntent = new Intent(getActivity(), TopSongActivity.class)
-                        .putExtra(Intent.EXTRA_TEXT, clickedSinger.id)
-                        .putExtra(Intent.EXTRA_REFERRER_NAME, clickedSinger.name);
+                        .putExtra(Intent.EXTRA_TEXT, clickedSinger.getId())
+                        .putExtra(Intent.EXTRA_REFERRER_NAME, clickedSinger.getName());
                 startActivity(songIntent);
 
             }
         });
 
+
         //Listener on Search Text
         final EditText searchSinger = (EditText) rootView.findViewById(R.id.search_text_view_artist);
-        searchSinger.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
+        // Dont call FetchSingerTask again on rotation
 
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            searchSinger.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                }
 
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
 
-            }
-
-            @Override
-            public void afterTextChanged(final Editable s) {
-
-                if (s.toString().length() > 0) {
-                    FetchSingerTask singerTask = new FetchSingerTask();
-                    singerTask.execute(s.toString());
-                } else {
-                    /* Empty string case remove arrayList items */
-                    singerAdapter.clear();
 
                 }
 
+                @Override
+                public void afterTextChanged(final Editable s) {
+                    // If we searched this word before dont call FetchSingerTask
+                    if (s.toString().equals(singerSearch))
+                        return;
+                    if (s.toString().length() > 0) {
+                        FetchSingerTask singerTask = new FetchSingerTask();
+                        singerTask.execute(s.toString());
+                    } /* Empty string case remove arrayList items */
+                    if (s.toString().length() == 0)
+                        singerAdapter.clear();
 
-            }
-        });
+
+                }
+            });
 
 
         return rootView;
@@ -122,6 +126,7 @@ public class SingerFragment extends Fragment {
     public void onSaveInstanceState(Bundle outState) {
         /* Save state of allISingers arrayList */
         outState.putParcelableArrayList("AllSinger", allSingersTemp);
+        outState.putString("WhatHaveBeenSearched", singerSearch);
 
         super.onSaveInstanceState(outState);
     }
