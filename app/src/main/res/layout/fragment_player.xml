@@ -1,0 +1,83 @@
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+android:paddingRight="@dimen/activity_horizontal_margin"
+android:paddingTop="@dimen/activity_vertical_margin"
+android:paddingBottom="@dimen/activity_vertical_margin"
+android:orientation="vertical"
+tools:context="com.sahelmastoureshgh.spotifystream.PlayerActivityFragment">
+
+    <TextView android:id="@+id/player_artist_name"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:layout_marginTop="@dimen/abc_action_bar_content_inset_material"
+        android:textStyle="bold"
+
+        />
+    <TextView android:id="@+id/player_album_name"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:layout_marginTop="8dp" />
+    <ImageView
+        android:id="@+id/player_album_image"
+        android:layout_width="fill_parent"
+        android:layout_height="230dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:baselineAlignBottom="false" />
+    <TextView
+        android:id="@+id/player_track_name"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:freezesText="true"
+        android:gravity="center_horizontal"
+
+        />
+
+    <SeekBar android:id="@+id/player_seek_bar"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_horizontal"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:layout_marginBottom="@dimen/activity_vertical_margin">
+
+        <ImageButton
+            android:id="@+id/play_previous_track"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@android:drawable/ic_media_previous"
+            android:contentDescription="previous"
+           />
+
+        <ImageButton
+            android:id="@+id/play_track"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@android:drawable/ic_media_play"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:contentDescription="play"
+            />
+
+        <ImageButton
+            android:id="@+id/play_next_track"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@android:drawable/ic_media_next"
+            android:contentDescription="next"
+            android:layout_marginLeft="@dimen/abc_action_bar_content_inset_material" />
+
+    </LinearLayout>
+
+
+</LinearLayout>

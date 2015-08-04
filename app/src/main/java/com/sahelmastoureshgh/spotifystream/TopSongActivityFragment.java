@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import java.util.ArrayList;
@@ -30,6 +31,7 @@ public class TopSongActivityFragment extends Fragment {
     FetchTrackTask trackTask;
     // when there is no album image but there is name and album name
     String withoutImage = "https://placeimg.com/80/80/nature";
+    String artistName;
 
 
     public TopSongActivityFragment() {
@@ -66,6 +68,7 @@ public class TopSongActivityFragment extends Fragment {
         if (savedInstanceState==null && intent != null && intent.hasExtra(Intent.EXTRA_TEXT)) {
             trackTask = new FetchTrackTask();
             String singerId = intent.getStringExtra(Intent.EXTRA_TEXT);
+            artistName = intent.getStringExtra(Intent.EXTRA_REFERRER_NAME);
             trackTask.execute(singerId);
 
         }
@@ -75,6 +78,20 @@ public class TopSongActivityFragment extends Fragment {
         // Get a reference to the ListView, and attach this adapter to it.
         ListView listView = (ListView) rootView.findViewById(R.id.list_item_song_track);
         listView.setAdapter(songAdapter);
+
+        //Add Listener when Song list Item has been clicked
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                // Get the data item for this position
+                Song clickedSong = songAdapter.getItem(position);
+                Intent playerIntent = new Intent(getActivity(), PlayerActivity.class)
+                        .putExtra(Intent.EXTRA_REFERRER, clickedSong)
+                        .putExtra(Intent.EXTRA_REFERRER_NAME, artistName);
+                startActivity(playerIntent);
+
+            }
+        });
 
         return rootView;
     }
