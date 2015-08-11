@@ -18,6 +18,7 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -36,6 +37,8 @@ public class PlayerActivityFragment extends DialogFragment {
     ImageButton playerButtonPrevious;
     ImageButton playerButtonNext;
     SeekBar playerSeekBarPlayer;
+    TextView playerSongDuration;
+    TextView playerSongTime;
 
 
     public PlayerActivityFragment() {
@@ -54,6 +57,8 @@ public class PlayerActivityFragment extends DialogFragment {
         playerButtonPrevious = (ImageButton) rootView.findViewById((R.id.play_previous_track));
         playerButtonNext = (ImageButton) rootView.findViewById(R.id.play_next_track);
         playerSeekBarPlayer = (SeekBar) rootView.findViewById(R.id.player_seek_bar);
+        playerSongDuration = (TextView)rootView.findViewById(R.id.player_time_end);
+        playerSongTime = (TextView)rootView.findViewById(R.id.player_time_start);
         playerButton.setTag(0);
 
         Intent intent = getActivity().getIntent();
@@ -126,22 +131,29 @@ public class PlayerActivityFragment extends DialogFragment {
 
         return rootView;
     }
+    public  String formatMiliSecond(long milliseconds) {
+        return String.format("%d:%02d",
+                TimeUnit.MILLISECONDS.toMinutes(milliseconds),
+                TimeUnit.MILLISECONDS.toSeconds(milliseconds) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(milliseconds))
+        );
+    }
     public void intialView(Song selectedSong) {
         playerAlbumName.setText(selectedSong.getAlbum());
         playerTrackName.setText(selectedSong.getName());
         Picasso.with(getActivity()).load(selectedSong.getPicture()).into(playerAlbumImage);
-        playerSeekBarPlayer.postDelayed(new Runnable() {
+        playerSongTime.postDelayed(new Runnable() {
             @Override
             public void run() {
-                if (mPlayberService != null) {
-                    int progressPosition = mPlayberService.getCurrentSongPosition();
-
-                    playerSeekBarPlayer.setProgress(progressPosition);
-
+                if(mPlayberService!=null) {
+                    long postionPlay = (long)mPlayberService.getCurrentSongPosition();
+                    playerSongTime.setText(formatMiliSecond(postionPlay));
+                    playerSongTime.postDelayed(this, 200);
+                    playerSeekBarPlayer.setProgress((int) postionPlay);
                 }
             }
-        }, 1000);
+        }, 200);
     }
+
     @Override
     public void onStart() {
         super.onStart();
