@@ -11,6 +11,17 @@ public class Song implements Parcelable {
     private String name;
     private String album;
     private String picture;
+    private String previewUrl;
+
+
+    public String getPreviewUrl() {
+        return previewUrl;
+    }
+
+    public void setPreviewUrl(String previewUrl) {
+        this.previewUrl = previewUrl;
+    }
+
     public String getName() {
         return name;
     }
@@ -35,10 +46,12 @@ public class Song implements Parcelable {
         this.picture = picture;
     }
 
-    public Song(String name, String album, String picture) {
+    public Song(String name, String album, String picture, String previewUrl) {
         this.name = name;
         this.album = album;
         this.picture = picture;
+        this.previewUrl = previewUrl;
+
     }
 
     @Override
@@ -51,6 +64,9 @@ public class Song implements Parcelable {
         dest.writeString(name);
         dest.writeString(album);
         dest.writeString(picture);
+        dest.writeString(previewUrl);
+
+
 
 
     }
@@ -69,5 +85,7 @@ public class Song implements Parcelable {
         name = p.readString();
         album = p.readString();
         picture = p.readString();
+        previewUrl = p.readString();
+
     }
 }

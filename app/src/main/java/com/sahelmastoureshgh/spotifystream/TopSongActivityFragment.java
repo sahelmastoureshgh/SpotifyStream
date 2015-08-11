@@ -83,10 +83,10 @@ public class TopSongActivityFragment extends Fragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                // Get the data item for this position
-                Song clickedSong = songAdapter.getItem(position);
+                // Get the data item for this position and send the position
                 Intent playerIntent = new Intent(getActivity(), PlayerActivity.class)
-                        .putExtra(Intent.EXTRA_REFERRER, clickedSong)
+                        .putExtra(Intent.EXTRA_REFERRER, position)
+                        .putExtra(Intent.EXTRA_RESTRICTIONS_LIST, allSongTemp)
                         .putExtra(Intent.EXTRA_REFERRER_NAME, artistName);
                 startActivity(playerIntent);
 
@@ -128,7 +128,7 @@ public class TopSongActivityFragment extends Fragment {
                 Tracks sTracks = spotifyService.getArtistTopTrack(params[0], options);
                 for (Track record : sTracks.tracks) {
                     if (record.name != null && record.album.name != null) {
-                        allSongs.add(new Song(record.name, record.album.name, record.album.images.size() > 0 ? record.album.images.get(0).url : withoutImage));
+                        allSongs.add(new Song(record.name, record.album.name, record.album.images.size() > 0 ? record.album.images.get(0).url : withoutImage, record.preview_url));
                     }
 
                 }
