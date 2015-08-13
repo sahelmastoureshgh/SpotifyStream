@@ -74,12 +74,13 @@ public class TopSongActivityFragment extends Fragment {
                 singerId = args.getString(TopSongActivity.EXTRA_ID);
                 artistName = args.getString(TopSongActivity.EXTRA_NAME);
             }
-            if(intent!=null) {
+            if(intent!=null && intent.getStringExtra(TopSongActivity.EXTRA_ID)!=null) {
                 singerId = intent.getStringExtra(TopSongActivity.EXTRA_ID);
                 artistName = intent.getStringExtra(TopSongActivity.EXTRA_NAME);
             }
             ActionBarActivity activity = (ActionBarActivity) getActivity();
-            activity.getSupportActionBar().setSubtitle(artistName);
+            if(artistName!=null)
+               activity.getSupportActionBar().setSubtitle(artistName);
             if(singerId!=null)
                trackTask.execute(singerId);
 
