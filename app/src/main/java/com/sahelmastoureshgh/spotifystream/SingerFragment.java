@@ -2,7 +2,6 @@ package com.sahelmastoureshgh.spotifystream;
 
 import android.app.Fragment;
 import android.content.Context;
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
@@ -51,6 +50,9 @@ public class SingerFragment extends Fragment {
 
         }
     }
+    public interface Callback {
+        public void onItemSelected(String name, String Id);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -77,10 +79,11 @@ public class SingerFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 // Get the data item for this position
                 Singer clickedSinger = singerAdapter.getItem(position);
-                Intent songIntent = new Intent(getActivity(), TopSongActivity.class)
-                        .putExtra(Intent.EXTRA_TEXT, clickedSinger.getId())
-                        .putExtra(Intent.EXTRA_REFERRER_NAME, clickedSinger.getName());
-                startActivity(songIntent);
+
+                ((Callback) getActivity()).onItemSelected(clickedSinger.getName(), clickedSinger.getId());
+
+
+                //startActivity(songIntent);
 
             }
         });

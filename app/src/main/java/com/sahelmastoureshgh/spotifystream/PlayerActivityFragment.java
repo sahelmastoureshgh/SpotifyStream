@@ -66,7 +66,7 @@ public class PlayerActivityFragment extends DialogFragment {
             songList = intent.getExtras().getParcelableArrayList(Intent.EXTRA_RESTRICTIONS_LIST);
             selectedSongNumber = intent.getIntExtra(Intent.EXTRA_REFERRER, 0);
             currentSong = songList.get(selectedSongNumber);
-            intialView(currentSong);
+            updateView(currentSong);
 
         }
 
@@ -93,7 +93,7 @@ public class PlayerActivityFragment extends DialogFragment {
                     selectedSongNumber = selectedSongNumber+1;
                     selectedSongNumber %= songList.size();
                     currentSong = songList.get(selectedSongNumber);
-                    intialView(currentSong);
+                    updateView(currentSong);
                     mPlayberService.Play(currentSong.getPreviewUrl());
                 }
             });
@@ -105,7 +105,7 @@ public class PlayerActivityFragment extends DialogFragment {
                     if(selectedSongNumber<0)
                         selectedSongNumber= songList.size()-1;
                     currentSong = songList.get(selectedSongNumber);
-                    intialView(currentSong);
+                    updateView(currentSong);
                     mPlayberService.Play(currentSong.getPreviewUrl());
                 }
             });
@@ -137,7 +137,7 @@ public class PlayerActivityFragment extends DialogFragment {
                 TimeUnit.MILLISECONDS.toSeconds(milliseconds) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(milliseconds))
         );
     }
-    public void intialView(Song selectedSong) {
+    public void updateView(Song selectedSong) {
         playerAlbumName.setText(selectedSong.getAlbum());
         playerTrackName.setText(selectedSong.getName());
         Picasso.with(getActivity()).load(selectedSong.getPicture()).into(playerAlbumImage);
@@ -148,16 +148,26 @@ public class PlayerActivityFragment extends DialogFragment {
                     long postionPlay = (long)mPlayberService.getCurrentSongPosition();
                     playerSongTime.setText(formatMiliSecond(postionPlay));
                     playerSongTime.postDelayed(this, 200);
-                    playerSeekBarPlayer.setProgress((int) postionPlay);
+                    playerSeekBarPlayer.setProgress((int) postionPlay/300);
                 }
             }
         }, 200);
+    }
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
+
+
+    @Override
+    public void onPause() {
+        super.onPause();
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        // Bind to LocalService
+        // Bind to Service
         Intent playerIntent = new Intent(getActivity(), PlayerService.class);
         //If it has not been bind already then bind it
         if(mPlayberService == null){
@@ -168,9 +178,10 @@ public class PlayerActivityFragment extends DialogFragment {
 
     @Override
     public void onStop() {
-        super.onStop();
+
         // Unbind from the service
         getActivity().unbindService(mConnection);
+        super.onStop();
 
     }
     /** Defines callbacks for service binding, passed to bindService() */

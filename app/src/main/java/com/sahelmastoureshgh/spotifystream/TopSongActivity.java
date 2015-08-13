@@ -1,6 +1,5 @@
 package com.sahelmastoureshgh.spotifystream;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
@@ -8,15 +7,19 @@ import android.view.MenuItem;
 
 
 public class TopSongActivity extends ActionBarActivity {
+    public static final String EXTRA_ID = "Id";
+    public static final String EXTRA_NAME = "Name";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_top_song);
-        Intent intent = getIntent();
-        if(intent != null && intent.hasExtra(Intent.EXTRA_REFERRER_NAME) && getSupportActionBar() != null) {
-            getSupportActionBar().setSubtitle(intent.getStringExtra(Intent.EXTRA_REFERRER_NAME));
+        if (savedInstanceState == null) {
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.detail_container, new TopSongActivityFragment())
+                    .commit();
         }
+
     }
 
 

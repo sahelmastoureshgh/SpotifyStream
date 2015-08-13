@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -65,11 +66,22 @@ public class TopSongActivityFragment extends Fragment {
 
         /* Get an Intent instance and retrieve Artist/Singer Id from EXTRA_TEXT to get his track */
         Intent intent = getActivity().getIntent();
-        if (savedInstanceState==null && intent != null && intent.hasExtra(Intent.EXTRA_TEXT)) {
+        Bundle args = getArguments();
+        if (savedInstanceState==null) {
             trackTask = new FetchTrackTask();
-            String singerId = intent.getStringExtra(Intent.EXTRA_TEXT);
-            artistName = intent.getStringExtra(Intent.EXTRA_REFERRER_NAME);
-            trackTask.execute(singerId);
+            String singerId=null;
+            if (args != null) {
+                singerId = args.getString(TopSongActivity.EXTRA_ID);
+                artistName = args.getString(TopSongActivity.EXTRA_NAME);
+            }
+            if(intent!=null) {
+                singerId = intent.getStringExtra(TopSongActivity.EXTRA_ID);
+                artistName = intent.getStringExtra(TopSongActivity.EXTRA_NAME);
+            }
+            ActionBarActivity activity = (ActionBarActivity) getActivity();
+            activity.getSupportActionBar().setSubtitle(artistName);
+            if(singerId!=null)
+               trackTask.execute(singerId);
 
         }
 
