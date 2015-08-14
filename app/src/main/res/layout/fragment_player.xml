@@ -95,7 +95,8 @@
             android:layout_height="match_parent"
             android:src="@android:drawable/ic_media_previous"
             android:contentDescription="previous"
-            android:layout_weight="0.04" />
+            android:layout_weight="0.04"
+            android:backgroundTint="@color/abc_background_cache_hint_selector_material_dark" />
 
         <ImageButton
             android:id="@+id/play_track"
@@ -105,7 +106,8 @@
             android:layout_marginLeft="26dp"
             android:layout_marginRight="26dp"
             android:contentDescription="play"
-            android:layout_weight="0.04" />
+            android:layout_weight="0.04"
+            android:backgroundTint="@color/abc_background_cache_hint_selector_material_dark" />
 
         <ImageButton
             android:id="@+id/play_next_track"
@@ -113,7 +115,8 @@
             android:layout_height="match_parent"
             android:src="@android:drawable/ic_media_next"
             android:contentDescription="next"
-            android:layout_weight="0.04" />
+            android:layout_weight="0.04"
+            android:backgroundTint="@color/abc_background_cache_hint_selector_material_dark" />
 
     </LinearLayout>
 
