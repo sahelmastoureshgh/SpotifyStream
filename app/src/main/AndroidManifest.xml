@@ -30,6 +30,7 @@
         </activity>
         <activity
             android:name=".PlayerActivity"
+            android:configChanges="orientation"
             android:label="@string/title_activity_player" >
         </activity>
         <service android:name=".PlayerService"/>
