@@ -23,7 +23,9 @@
         <activity
             android:name=".TopSongActivity"
             android:label="@string/title_activity_top_song"
-            android:parentActivityName=".MainActivity" >
+            android:parentActivityName=".MainActivity"
+            android:launchMode="singleTop"
+            >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.sahelmastoureshgh.spotifystream.MainActivity" />
@@ -31,7 +33,12 @@
         <activity
             android:name=".PlayerActivity"
             android:configChanges="orientation"
-            android:label="@string/title_activity_player" >
+            android:label="Player"
+            android:parentActivityName=".TopSongActivity"
+           >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.sahelmastoureshgh.spotifystream.TopSongActivity"/>
         </activity>
         <service android:name=".PlayerService"/>
     </application>

@@ -102,7 +102,7 @@
             android:id="@+id/play_track"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:src="@android:drawable/ic_media_play"
+            android:src="@android:drawable/ic_media_pause"
             android:layout_marginLeft="26dp"
             android:layout_marginRight="26dp"
             android:contentDescription="play"

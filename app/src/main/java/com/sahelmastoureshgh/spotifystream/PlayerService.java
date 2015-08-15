@@ -71,5 +71,11 @@ public class PlayerService  extends Service implements MediaPlayer.OnPreparedLis
     public int getCurrentSongPosition() {
         return mMediaPlayer.getCurrentPosition();
     }
+    public int getCurrentTrackDuration(){
+        return mMediaPlayer.getDuration();
+    }
+    public void Seek(int position) {
+        mMediaPlayer.seekTo(position);
+    }
 
 }

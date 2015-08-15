@@ -30,6 +30,7 @@ import java.util.concurrent.TimeUnit;
 public class PlayerActivityFragment extends DialogFragment {
     int selectedSongNumber;
     ArrayList<Song> songList;
+    ArrayList<Song> songListTemp;
     Song currentSong;
     Song currentPlayedSong;
     PlayerService mPlayberService;
@@ -45,9 +46,12 @@ public class PlayerActivityFragment extends DialogFragment {
     TextView playerSongTime;
     private Handler handler = new Handler();
     SeekBarThread tempSeekBar;
+    int songPosition=0;
+
 
 
     public PlayerActivityFragment() {
+        tempSeekBar = new SeekBarThread();
     }
 
     @Override
@@ -56,8 +60,12 @@ public class PlayerActivityFragment extends DialogFragment {
 
         if (savedInstanceState != null) {
             currentPlayedSong = new Song(null, null, null, null);
+            songListTemp =new ArrayList<>();
             currentPlayedSong = savedInstanceState.getParcelable("currentPlayedSong");
+            songPosition = savedInstanceState.getInt("songPosition", 0);
+            songListTemp = savedInstanceState.getParcelableArrayList("songList");
             currentSong = currentPlayedSong;
+            songList = songListTemp;
 
         }
 
@@ -101,11 +109,11 @@ public class PlayerActivityFragment extends DialogFragment {
             public void onClick(View view) {
                 int buttonMode = (int) playerButton.getTag();
                 if (buttonMode == 0) {
-                    playerButton.setImageResource(android.R.drawable.ic_media_pause);
+                    playerButton.setImageResource(android.R.drawable.ic_media_play);
                     mPlayberService.pause();
                     playerButton.setTag(1);
                 } else {
-                    playerButton.setImageResource(android.R.drawable.ic_media_play);
+                    playerButton.setImageResource(android.R.drawable.ic_media_pause);
                     mPlayberService.resume();
                     playerButton.setTag(0);
                 }
@@ -118,6 +126,7 @@ public class PlayerActivityFragment extends DialogFragment {
                 selectedSongNumber = selectedSongNumber + 1;
                 selectedSongNumber %= songList.size();
                 currentSong = songList.get(selectedSongNumber);
+                songPosition=0;
                 updateView(currentSong);
                 mPlayberService.Play(currentSong.getPreviewUrl());
             }
@@ -130,6 +139,7 @@ public class PlayerActivityFragment extends DialogFragment {
                 if (selectedSongNumber < 0)
                     selectedSongNumber = songList.size() - 1;
                 currentSong = songList.get(selectedSongNumber);
+                songPosition=0;
                 updateView(currentSong);
                 mPlayberService.Play(currentSong.getPreviewUrl());
             }
@@ -140,7 +150,8 @@ public class PlayerActivityFragment extends DialogFragment {
 
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-
+                if(b &&  mPlayberService!=null)
+                    mPlayberService.Seek(i);
             }
 
             @Override
@@ -193,7 +204,7 @@ public class PlayerActivityFragment extends DialogFragment {
         playerTrackName.setText(selectedSong.getName());
         Picasso.with(getActivity()).load(selectedSong.getPicture()).into(playerAlbumImage);
         playerSeekBarPlayer.setMax(30000);
-        playerSeekBarPlayer.setProgress(0);
+        playerSeekBarPlayer.setProgress(songPosition);
 
     }
     private class SeekBarThread implements Runnable {
@@ -202,6 +213,7 @@ public class PlayerActivityFragment extends DialogFragment {
         public void run() {
             if (mPlayberService != null) {
                 long positionPlay = (long) mPlayberService.getCurrentSongPosition();
+                songPosition=(int)positionPlay;
                 playerSongTime.setText(formatMiliSecond(positionPlay));
                 playerSeekBarPlayer.setProgress((int) positionPlay);
             }
@@ -227,12 +239,13 @@ public class PlayerActivityFragment extends DialogFragment {
         Intent playerIntent = new Intent(getActivity(), PlayerService.class);
         //If it has not been bind already then bind it
         if (mPlayberService == null) {
+            getActivity().startService(playerIntent);
             getActivity().bindService(playerIntent, mConnection, Context.BIND_AUTO_CREATE);
 
+
         }
-        if(tempSeekBar ==null)
+        if(tempSeekBar !=null)
         {
-            tempSeekBar = new SeekBarThread();
             playerSeekBarPlayer.post(tempSeekBar);
         }
 
@@ -250,6 +263,8 @@ public class PlayerActivityFragment extends DialogFragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         outState.putParcelable("currentPlayedSong", currentSong);
+        outState.putInt("songPosition", songPosition);
+        outState.putParcelableArrayList("songList",songList);
         super.onSaveInstanceState(outState);
     }
 
@@ -264,7 +279,10 @@ public class PlayerActivityFragment extends DialogFragment {
             // We've bound to Service
             PlayerService.MediaPlayerBinder binder = (PlayerService.MediaPlayerBinder) service;
             mPlayberService = binder.getService();
-            mPlayberService.Play(currentSong.getPreviewUrl());
+            if(songPosition==0)
+               mPlayberService.Play(currentSong.getPreviewUrl());
+            else
+               mPlayberService.Seek(songPosition);
 
         }
 
